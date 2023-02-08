@@ -1,12 +1,15 @@
 import express, { Application, json } from "express";
 import { startDatabase } from "./database";
-import { createDeveloper, showDevelopers } from "./logics/dev.logics";
+import { createDeveloper, deleteDeveloper, findDeveloper, showDevelopers } from "./logics/developers.logics";
+import { ensureDevEmailOnly, ensureIdDeveloperExists } from "./middlewares/developer.middlewares";
 
 const app: Application = express();
 
 app.use(json());
 app.get("/developers", showDevelopers);
-app.post("/developers", createDeveloper);
+app.get("/developers/:id", ensureIdDeveloperExists, findDeveloper);
+app.post("/developers", ensureDevEmailOnly, createDeveloper);
+app.delete("/developers/:id", ensureIdDeveloperExists, deleteDeveloper);
 
 const PORT: number = 3000;
 const url: string = `http://localhost:${PORT}`;

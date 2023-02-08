@@ -11,3 +11,8 @@ export interface iDeveloper extends iDeveloperRequest {
 }
 
 export type iDeveloperResult = QueryResult<iDeveloper>;
+
+export interface iValidateCreateDeveloper {
+    status: boolean;
+    keysMissing: string[];
+}
