@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import format from "pg-format";
 import { client } from "../database";
-import { iDeveloperRequest, iDeveloperResult, iValidateCreateDeveloper } from "../interfaces/developers.interfaces";
-import { validateCreateUserData } from "../validates/developers.validates";
+import { iDeveloperCreateRequest, iDeveloperResult, iValidateDeveloper } from "../interfaces/developers.interfaces";
+import { validateCreateDevData } from "../validates/developers.validates";
 
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
-  const resultValidate: iValidateCreateDeveloper = validateCreateUserData(req);
+  const resultValidate: iValidateDeveloper = validateCreateDevData(req);
   if (!resultValidate.status) {
     if (resultValidate.keysMissing.length > 0) {
       return res.status(400).json({
-        message: `Some keys are missing ${resultValidate.keysMissing}`
+        message: `Some keys are missing: ${resultValidate.keysMissing}`
       });
     }
     return res.status(400).json({
@@ -18,7 +18,7 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
     });
   }
 
-  const devData: iDeveloperRequest = req.dev!;
+  const devData: iDeveloperCreateRequest = req.dev!;
   const queryString: string = format(`--sql
         INSERT INTO
             developers(%I)
@@ -62,7 +62,7 @@ export async function showDevelopers(req: Request, res: Response): Promise<Respo
 }
 
 export async function findDeveloper(req: Request, res: Response): Promise<Response> {
-  const id: number = req.idDev!;
+  const idDev: number = req.idDev!;
   
   const queryString: string = `--sql
         SELECT
@@ -82,7 +82,7 @@ export async function findDeveloper(req: Request, res: Response): Promise<Respon
 
   const queryConfig: QueryConfig = {
     text: queryString,
-    values: [id],
+    values: [idDev],
   };
 
   const queryResult: iDeveloperResult = await client.query(queryConfig);
@@ -91,9 +91,9 @@ export async function findDeveloper(req: Request, res: Response): Promise<Respon
 }
 
 export async function deleteDeveloper(req: Request, res: Response): Promise<Response> {
-  const id: number = req.idDev!;
+  const idDev: number = req.idDev!;
   //Depois preciso criar uma forma de apagar as tecnologias também
-  const queryString = `--sql
+  let queryString = `--sql
         DELETE FROM
             developers
         WHERE  
@@ -101,12 +101,29 @@ export async function deleteDeveloper(req: Request, res: Response): Promise<Resp
         RETURNING *;
     `;
 
-  const queryConfig: QueryConfig = {
+  let queryConfig: QueryConfig = {
     text: queryString,
-    values: [id],
+    values: [idDev],
   };
 
-  await client.query(queryConfig);
+  const queryResult: iDeveloperResult = await client.query(queryConfig);
+  const developerInfoId: number | null = queryResult.rows[0].developerInfoId;
+
+  if (developerInfoId !== null) {
+    queryString = `--sql
+      DELETE FROM 
+        developer_infos
+      WHERE
+        id = $1;
+    `;
+
+    queryConfig = {
+      text: queryString,
+      values: [developerInfoId]
+    }
+
+    await client.query(queryConfig);
+  }
 
   return res.status(204).send();
 }

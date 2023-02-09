@@ -10,7 +10,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
     if (!resultValidate.status) {
         if (resultValidate.keysMissing.length > 0) {
             return res.status(400).json({
-                message: `Some keys are missing ${resultValidate.keysMissing}`
+                message: `Some keys are missing: ${resultValidate.keysMissing}`
             });
         }
         return res.status(400).json({
@@ -60,3 +60,13 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
         });
     }
 }
+
+
+
+// --Assim que faz para atualizar uma tecnologia
+// UPDATE 
+// 	developer_infos 
+// SET 
+// 	"preferredOS" = 'Linux'
+// WHERE 
+// 	id = 13;

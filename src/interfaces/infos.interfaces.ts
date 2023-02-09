@@ -16,3 +16,4 @@ export interface iInfo extends iInfoRequest {
 }
 
 export type iInfoResult = QueryResult<iInfo>;
+

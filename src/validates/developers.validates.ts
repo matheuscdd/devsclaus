@@ -1,21 +1,20 @@
 import { Request } from "express";
-import { iDeveloperRequest, iValidateCreateDeveloper,
+import { iDeveloperCreateRequest, iDeveloperUpdateRequest, iValidateDeveloper,
 } from "../interfaces/developers.interfaces";
 
-export function validateCreateUserData(req: Request): iValidateCreateDeveloper {
-  const devData: iDeveloperRequest = req.body;
+export function validateCreateDevData(req: Request): iValidateDeveloper {
+  const devData: iDeveloperCreateRequest = req.body;
   const requiredKeys: string[] = ["name", "email"];
   const verifyTypes: boolean =
     typeof devData.name === "string" &&
-    typeof devData.email === "string" &&
-    (devData.developerInfoId ? typeof devData.developerInfoId === "number" : true);
+    typeof devData.email === "string";
 
   if (verifyTypes) {
     req.dev = {
       name: devData.name,
       email: devData.email,
+      developerInfoId: null
     };
-    devData.developerInfoId ? req.dev.developerInfoId = devData.developerInfoId  : undefined;
     return {
       status: true,
       rightFormat: [true],
@@ -32,3 +31,10 @@ export function validateCreateUserData(req: Request): iValidateCreateDeveloper {
     rightFormat: [verifyTypes]
   };
 }
+
+// export function validateUpdateDevData(req: Request): iValidateDeveloper {
+//   const devData: iDeveloperUpdateRequest = req.body;
+//   const requiredKeys: string[] = ["name", "email"];
+//   const verifyTypes: boolean = 
+
+// }
