@@ -3,6 +3,7 @@ import format from "pg-format";
 import { iInfoResult, iValidadeCreateInfo } from "../interfaces/infos.interfaces";
 import { validateCreateInfo } from "../validates/infos.validates";
 import { client } from "../database";
+import { QueryConfig } from "pg";
 
 export async function createInfo(req: Request, res: Response): Promise<Response> {
     const resultValidate: iValidadeCreateInfo = validateCreateInfo(req);
@@ -18,7 +19,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
     }
 
     const infoData = req.infoDev!;
-    const queryString: string = format(`--sql
+    let queryString: string = format(`--sql
             INSERT INTO
                 developer_infos(%I)
             VALUES
@@ -29,9 +30,29 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
         Object.values(infoData)
     );
 
+    const queryResult: iInfoResult = await client.query(queryString);
+    const idInfo: number = queryResult.rows[0].id;
+    const idDev: number = req.idDev!;
+
+    queryString = `--sql
+        UPDATE
+            developers
+        SET 
+            "developerInfoId" = $1
+        WHERE
+            "id" = $2
+        RETURNING *;        
+    `;
+
+    const queryConfig: QueryConfig = {
+        text: queryString,
+        values: [idInfo, idDev]
+    }
+
     try {
-        const queryResult: iInfoResult = await client.query(queryString);
-        return res.status(201).json(queryResult.rows[0])
+        await client.query(queryConfig);
+        return res.status(201).json(queryResult.rows[0]);
+
     } catch(error: any) {
         return res.status(500).json({
             message: "Internal Server Error",
