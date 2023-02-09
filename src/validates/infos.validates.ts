@@ -3,16 +3,15 @@ import { Request } from "express";
 
 export function validateCreateInfo(req: Request): iValidadeCreateInfo {
     const infoData: iInfoRequest = req.body;
-    let infoDate: number | null | string | Date = Date.parse(infoData.developerSince);
-    if (infoDate !== null) {
+    let infoDate: number | null | string | Date = new Date(infoData.developerSince);
+    if (typeof infoDate !== "string") {
         infoDate = infoDate.toLocaleString("pt-BR");
     }
-
     const systemOSRequired: string[] = ["Windows", "Linux", "MacOS"];
     const requiredKeys: string[] = ["preferredOS", "developerSince"];
     const verifyTypes: boolean = 
         typeof infoData.preferredOS === "string" &&
-        typeof infoDate === "string";
+        infoDate !== "Invalid Date";
     const isPreferredOSRightFormat: boolean = systemOSRequired.includes(infoData.preferredOS);
     if (verifyTypes && isPreferredOSRightFormat) {
         req.infoDev = {
@@ -22,13 +21,13 @@ export function validateCreateInfo(req: Request): iValidadeCreateInfo {
         return {
             status: true,
             keysMissing: [],
-            outFormat: [false]
+            rightFormat: [true]
         }
     }
     const keysMissing: string[] = requiredKeys.filter((key) => !Object.keys(infoData).includes(key));
     return {
         status: false,
         keysMissing,
-        outFormat: [isPreferredOSRightFormat, verifyTypes]
+        rightFormat: [isPreferredOSRightFormat, verifyTypes]
     }
 }

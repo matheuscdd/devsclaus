@@ -8,14 +8,18 @@ import { validateCreateUserData } from "../validates/developers.validates";
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
   const resultValidate: iValidateCreateDeveloper = validateCreateUserData(req);
   if (!resultValidate.status) {
+    if (resultValidate.keysMissing.length > 0) {
+      return res.status(400).json({
+        message: `Some keys are missing ${resultValidate.keysMissing}`
+      });
+    }
     return res.status(400).json({
-      message: `Some keys are missing ${resultValidate.keysMissing}`,
+      message: `Some keys or values are out of format`
     });
   }
 
   const devData: iDeveloperRequest = req.dev!;
-
-  let queryString: string = format(`--sql
+  const queryString: string = format(`--sql
         INSERT INTO
             developers(%I)
         VALUES
@@ -32,7 +36,7 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
   } catch (error: any) {
     return res.status(500).json({
       message: "Internal Server Error",
-      type: error.message,
+      type: error.message
     });
   }
 }

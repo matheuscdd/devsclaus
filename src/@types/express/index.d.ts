@@ -1,6 +1,6 @@
 import * as express from "express";
 import { iDeveloperRequest } from "../../interfaces/developers.interfaces";
-import { iDeveloperRequest } from "../../interfaces/developers.interfaces";
+import { iInfoRequest } from "../../interfaces/infos.interfaces";
 
 declare global {
   namespace Express {

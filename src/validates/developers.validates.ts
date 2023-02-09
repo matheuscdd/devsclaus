@@ -18,6 +18,7 @@ export function validateCreateUserData(req: Request): iValidateCreateDeveloper {
     devData.developerInfoId ? req.dev.developerInfoId = devData.developerInfoId  : undefined;
     return {
       status: true,
+      rightFormat: [true],
       keysMissing: [],
     };
   }
@@ -28,5 +29,6 @@ export function validateCreateUserData(req: Request): iValidateCreateDeveloper {
   return {
     status: false,
     keysMissing,
+    rightFormat: [verifyTypes]
   };
 }

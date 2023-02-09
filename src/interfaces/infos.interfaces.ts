@@ -1,7 +1,9 @@
+import { QueryResult } from "pg";
+
 export interface iValidadeCreateInfo {
     status: boolean;
     keysMissing: string[];
-    outFormat: boolean[];
+    rightFormat: boolean[];
 }
 
 export interface iInfoRequest {
@@ -12,3 +14,5 @@ export interface iInfoRequest {
 export interface iInfo extends iInfoRequest {
     id: number;
 }
+
+export type iInfoResult = QueryResult<iInfo>;

@@ -15,4 +15,5 @@ export type iDeveloperResult = QueryResult<iDeveloper>;
 export interface iValidateCreateDeveloper {
     status: boolean;
     keysMissing: string[];
+    rightFormat: boolean[];
 }
