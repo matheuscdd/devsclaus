@@ -1,17 +1,18 @@
 import { QueryResult } from "pg";
 
-export interface iDeveloperCreateRequest {
-    name: string;
-    email: string;
+export interface iDeveloperRequest {
+    name?: string;
+    email?: string;
     developerInfoId?: null;
 }
 
 export interface iDeveloperUpdateRequest {
     name?: string;
     email?: string;
+    developerInfoId?: null;
 }
 
-export interface iDeveloper extends iDeveloperCreateRequest {
+export interface iDeveloper extends iDeveloperRequest {
     id: number;
     developerInfoId: null;
 }

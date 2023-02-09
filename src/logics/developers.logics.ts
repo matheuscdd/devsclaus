@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import format from "pg-format";
 import { client } from "../database";
-import { iDeveloperCreateRequest, iDeveloperResult, iValidateDeveloper } from "../interfaces/developers.interfaces";
-import { validateCreateDevData } from "../validates/developers.validates";
+import { iDeveloperRequest, iDeveloperResult, iDeveloperUpdateRequest, iValidateDeveloper } from "../interfaces/developers.interfaces";
+import { validateCreateDevData, validateUpdateDevData } from "../validates/developers.validates";
 
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
   const resultValidate: iValidateDeveloper = validateCreateDevData(req);
@@ -18,7 +18,7 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
     });
   }
 
-  const devData: iDeveloperCreateRequest = req.dev!;
+  const devData: iDeveloperRequest = req.dev!;
   const queryString: string = format(`--sql
         INSERT INTO
             developers(%I)
@@ -92,7 +92,7 @@ export async function findDeveloper(req: Request, res: Response): Promise<Respon
 
 export async function deleteDeveloper(req: Request, res: Response): Promise<Response> {
   const idDev: number = req.idDev!;
-  //Depois preciso criar uma forma de apagar as tecnologias também
+
   let queryString = `--sql
         DELETE FROM
             developers
@@ -126,4 +126,46 @@ export async function deleteDeveloper(req: Request, res: Response): Promise<Resp
   }
 
   return res.status(204).send();
+}
+
+
+export async function updateDeveloper(req: Request, res: Response): Promise<Response> {
+  const resultValidate: iValidateDeveloper = validateUpdateDevData(req);
+  if (!resultValidate.status) {
+    if (resultValidate.keysMissing.length > 0) {
+      return res.status(400).json({
+        message: `Some keys are missing: ${resultValidate.keysMissing}`
+      });
+    }
+    return res.status(400).json({
+      message: `Some keys or values are out of format`
+    });
+  }
+  
+  const idDev: number = req.idDev!;
+  const dev: iDeveloperUpdateRequest = req.dev!;
+
+  const queryString: string = format(`--sql
+    UPDATE
+      developers
+    SET (%I) = ROW(%L)
+    WHERE
+      id = %s
+    RETURNING *;
+  `,
+  Object.keys(dev),
+  Object.values(dev),
+  idDev
+  );
+
+  try {
+    const queryResult: iDeveloperResult = await client.query(queryString);
+    console.log(queryResult.rows)
+    return res.status(200).json(queryResult.rows[0]) 
+  } catch(error: any) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      type: error.message
+    });
+  }
 }
