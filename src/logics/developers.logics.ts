@@ -3,7 +3,7 @@ import { QueryConfig, QueryResult } from "pg";
 import format from "pg-format";
 import { client } from "../database";
 import { iDeveloperRequest, iDeveloperResult, iValidateCreateDeveloper } from "../interfaces/developers.interfaces";
-import { validateCreateUserData } from "../validates/developer.validate";
+import { validateCreateUserData } from "../validates/developers.validates";
 
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
   const resultValidate: iValidateCreateDeveloper = validateCreateUserData(req);
@@ -32,17 +32,24 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
   } catch (error: any) {
     return res.status(500).json({
       message: "Internal Server Error",
-      rt: error.message,
+      type: error.message,
     });
   }
 }
 
 export async function showDevelopers(req: Request, res: Response): Promise<Response> {
   const queryString = `--sql
-        SELECT
-            *
-        FROM 
-            developers;
+          SELECT
+              dv."id" "developerId",
+              dv."name" "developerName",
+              dv."email" "developerEmail",
+              di."id" "developerInfoId",
+              di."developerSince" "developerInfoDeveloperSince",
+              di."preferredOS" "developerInfoPreferredOS"
+          FROM 
+              developers dv
+          LEFT JOIN 
+              developer_infos di ON dv. "developerInfoId" = di.id;
     `;
 
   const queryResult: iDeveloperResult = await client.query(queryString);
@@ -52,14 +59,21 @@ export async function showDevelopers(req: Request, res: Response): Promise<Respo
 
 export async function findDeveloper(req: Request, res: Response): Promise<Response> {
   const id: number = req.idDev!;
-
+  
   const queryString: string = `--sql
         SELECT
-            *
+            dv."id" "developerId",
+            dv."name" "developerName",
+            dv."email" "developerEmail",
+            di."id" "developerInfoId",
+            di."developerSince" "developerInfoDeveloperSince",
+            di."preferredOS" "developerInfoPreferredOS"
         FROM    
-            developers
+            developers dv
+        LEFT JOIN
+            developer_infos di ON dv. "developerInfoId" = di."id"
         WHERE
-            id = $1;
+            dv."id" = $1;
     `;
 
   const queryConfig: QueryConfig = {

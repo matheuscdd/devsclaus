@@ -9,6 +9,6 @@
     "exactOptionalPropertyTypes": true,
     "skipLibCheck": true
   },
-  "include": ["src/*", "src/validates/developer.validate.ts"],
+  "include": ["src/*", "src/validates/developers.validates.ts"],
   "exclude": ["node_modules"]
 }

@@ -7,7 +7,7 @@ import { client } from "../database"
 export async function ensureIdProjectsExists(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     const id: number = Number(req.params.id);
 
-    if(isNaN(id)) {
+    if (isNaN(id)) {
         return notFoundProjectId(res);
     }
 

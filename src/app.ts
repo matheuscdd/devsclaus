@@ -11,7 +11,7 @@ app.get("/developers/:id", ensureIdDeveloperExists, findDeveloper);
 app.post("/developers", ensureDevEmailOnly, createDeveloper);
 app.delete("/developers/:id", ensureIdDeveloperExists, deleteDeveloper);
 
-const PORT: number = 3000;
+const PORT: number = 3000; //Depois tenho que arrumar
 const url: string = `http://localhost:${PORT}`;
 const runningMsg: string = `Server running on ${url}`;
 app.listen(PORT, async (): Promise<void> => {
