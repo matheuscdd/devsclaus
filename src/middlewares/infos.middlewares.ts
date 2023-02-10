@@ -31,7 +31,7 @@ export async function ensureDevNoInfo(req: Request, res: Response, next: NextFun
     return next();
 }
 
-export async function ensureDevHaveInfo(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+export async function ensureDevHasInfo(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     const id: number = req.idDev!;
 
     const queryString: string = `--sql

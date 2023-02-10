@@ -24,9 +24,25 @@ export interface iProjectWithTech {
     projectRepository: URL;
     projectStartDate: Date;
     projectEndDate: null | Date;
-    projectDeveloperID: number;
+    projectDeveloperId: number;
     technologyID: null | number;
     technologyName: null | string;
 }
 
 export type iProjectWithTechResult = QueryResult<iProjectWithTech>;
+
+interface iProjectTechnologies {
+    id: number;
+    addedIn: Date;
+    projectId: number;
+    technologyId: number | null;
+}
+
+export type iProjectTechnologiesResult = QueryResult<iProjectTechnologies>;
+
+interface iTech {
+    id: number;
+    name: string;
+}
+
+export type iTechResult = QueryResult<iTech>;

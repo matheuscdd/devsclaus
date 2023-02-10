@@ -1,4 +1,5 @@
 import { QueryResult } from "pg";
+import { iProjectWithTech } from "./projects.interfaces";
 
 export interface iDeveloperRequest {
     name?: string;
@@ -41,3 +42,7 @@ export interface iDeveloperInfoId {
 }
 
 export type iDeveloperInfoIdResult = QueryResult<iDeveloperInfoId>;
+
+type iDeveloperProject  = iDeveloper & Omit<iProjectWithTech, 'projectDeveloperId'>;
+
+export type iDeveloperProjectResult = QueryResult<iDeveloperProject>;

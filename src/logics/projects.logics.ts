@@ -61,7 +61,46 @@ export async function findProject(req: Request, res: Response): Promise<Response
 
     const queryResult: iProjectWithTechResult = await client.query(queryConfig);
     
-    
-    return res.status(200).json(queryResult.rows[0]);
+    return res.status(200).json(queryResult.rows);
 }
 
+export async function deleteProject(req: Request, res: Response): Promise<Response> {
+    const idProject: number = req.idProject!;
+
+    const queryString: string = `--sql
+        DELETE FROM
+            projects
+        WHERE
+            id = $1;
+    `;
+
+    const queryConfig: QueryConfig = {
+        text: queryString,
+        values: [idProject]
+    }
+
+    await client.query(queryConfig);
+
+    return res.status(204).send();
+}
+
+export async function deleteTech(req: Request, res: Response): Promise<Response> {
+    const idProject: number = req.idProject!;
+    const idTech: number = req.idTech!;
+ 
+    const queryString: string = `--sql
+        DELETE FROM
+            projects_technologies pj
+        WHERE
+            pj."projectId" = $1 and pj."technologyId" = $2;
+    `; 
+
+    const queryConfig: QueryConfig = {
+        text: queryString,
+        values: [idProject, idTech]
+    }
+
+    await client.query(queryConfig);
+
+    return res.status(204).send();
+}

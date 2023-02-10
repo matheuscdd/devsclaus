@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig } from "pg";
 import { notFoundProjectId } from "../errors/projects.errors";
-import { iProjectResult } from "../interfaces/projects.interfaces";
+import { iProjectResult, iProjectTechnologiesResult, iTechResult } from "../interfaces/projects.interfaces";
 import { client } from "../database"
 
 export async function ensureIdProjectsExists(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-    const id: number = Number(req.params.id);
+    const idProject: number = Number(req.params.id);
 
-    if (isNaN(id)) {
+    if (isNaN(idProject)) {
         return notFoundProjectId(res);
     }
 
@@ -22,15 +22,74 @@ export async function ensureIdProjectsExists(req: Request, res: Response, next: 
 
     const queryConfig: QueryConfig = {
         text: queryString,
-        values: [id]
+        values: [idProject]
     }
 
     const queryResult: iProjectResult = await client.query(queryConfig);
-    
+
     if (queryResult.rowCount === 0){
         return notFoundProjectId(res);
     }
     req.idProject = queryResult.rows[0].id;
 
+    return next();
+}
+
+export async function ensureProjectHasTech(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    const idProject: number = req.idProject!;
+    const requiredTypesTechs: string[] = ["JavaScript", "Python", "React", "Express.js", "HTML", "CSS", "Django", "PostgreSQL", "MongoDB"];
+    const nameTech: string = req.params.name;
+    if (!requiredTypesTechs.includes(nameTech)) {
+        return res.status(404).json({
+            message: `Tech name is not valid`
+        });
+    }
+
+    let queryString: string = `--sql
+        SELECT
+            *
+        FROM
+            projects_technologies
+        WHERE
+            "projectId" = $1;
+    `;
+
+    let queryConfig: QueryConfig = {
+        text: queryString,
+        values: [idProject]
+    }
+
+    let queryResult: iProjectTechnologiesResult = await client.query(queryConfig);
+
+    if (queryResult.rowCount === 0) {
+        return res.status(400).json({
+            message: `This project does not have a tech`
+        });
+    }
+
+    queryString = `--sql
+        SELECT
+            *
+        FROM
+            technologies
+        WHERE
+            name = $1;
+    `;
+
+    queryConfig = {
+        text: queryString,
+        values: [nameTech]
+    }
+
+    const queryResponse: iTechResult = await client.query(queryConfig);
+
+    if (queryResponse.rowCount === 0) {
+        return res.status(400).json({
+            message: `This project does not have this tech`
+        });
+    }
+
+    req.idTech = queryResponse.rows[0].id;
+    
     return next();
 }

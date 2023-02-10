@@ -5,9 +5,9 @@ import { iDeveloperResult } from "../interfaces/developers.interfaces";
 import { notFoundDevId } from "../errors/developer.errors";
 
 export async function ensureDevEmailOnly(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-  const email: string = req.body.email;
+  const emailDev: string = req.body.email;
 
-  if (!email) {
+  if (!emailDev) {
     return next();
   }
 
@@ -22,7 +22,7 @@ export async function ensureDevEmailOnly(req: Request, res: Response, next: Next
 
   const queryConfig: QueryConfig = {
     text: queryString,
-    values: [email],
+    values: [emailDev],
   };
 
   const queryResult: QueryResult = await client.query(queryConfig);
@@ -37,9 +37,9 @@ export async function ensureDevEmailOnly(req: Request, res: Response, next: Next
 }
 
 export async function ensureIdDeveloperExists(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
-  const id: number = Number(req.params.id);
+  const idDev: number = Number(req.params.id);
 
-  if (isNaN(id)) {
+  if (isNaN(idDev)) {
     return notFoundDevId(res);
   }
 
@@ -54,7 +54,7 @@ export async function ensureIdDeveloperExists(req: Request, res: Response, next:
 
   const queryConfig: QueryConfig = {
     text: queryString,
-    values: [id],
+    values: [idDev],
   };
 
   const queryResult: iDeveloperResult = await client.query(queryConfig);
@@ -63,7 +63,7 @@ export async function ensureIdDeveloperExists(req: Request, res: Response, next:
     return notFoundDevId(res);
   }
 
-  req.idDev = id;
+  req.idDev = idDev;
 
   return next();
 }

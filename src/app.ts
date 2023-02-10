@@ -4,10 +4,10 @@ import { createDeveloper, deleteDeveloper, findDeveloper, showDevelopers, showPr
 import { ensureDevEmailOnly, ensureIdDeveloperExists } from "./middlewares/developer.middlewares";
 import { createInfo, updateInfo } from "./logics/infos.logics";
 import { isBodyEmpty } from "./middlewares/common.middlewares";
-import { ensureDevHaveInfo, ensureDevNoInfo } from "./middlewares/infos.middlewares";
-import { findProject, showProjects } from "./logics/projects.logics";
-import { ensureIdProjectsExists } from "./middlewares/projects.middlewares";
-
+import { ensureDevHasInfo, ensureDevNoInfo } from "./middlewares/infos.middlewares";
+import { deleteProject, deleteTech, findProject, showProjects } from "./logics/projects.logics";
+import { ensureIdProjectsExists, ensureProjectHasTech } from "./middlewares/projects.middlewares";
+import "dotenv/config";
 
 const app: Application = express();
 
@@ -16,12 +16,16 @@ app.get("/developers", showDevelopers);
 app.get("/developers/:id", ensureIdDeveloperExists, findDeveloper);
 app.post("/developers", isBodyEmpty, ensureDevEmailOnly, createDeveloper);
 app.delete("/developers/:id", ensureIdDeveloperExists, deleteDeveloper);
-app.post("/developers/:id/infos", isBodyEmpty, ensureIdDeveloperExists, ensureDevNoInfo, createInfo);
 app.patch("/developers/:id", isBodyEmpty, ensureIdDeveloperExists, ensureDevEmailOnly, updateDeveloper);
-app.patch("/developers/:id/infos", isBodyEmpty, ensureIdDeveloperExists, ensureDevHaveInfo, updateInfo);
+app.get("/developers/:id/projects", ensureIdDeveloperExists, showProjectsDev);
+
+app.post("/developers/:id/infos", isBodyEmpty, ensureIdDeveloperExists, ensureDevNoInfo, createInfo);
+app.patch("/developers/:id/infos", isBodyEmpty, ensureIdDeveloperExists, ensureDevHasInfo, updateInfo);
+
 app.get("/projects", showProjects);
 app.get("/projects/:id", ensureIdProjectsExists, findProject);
-app.get("/developers/:id/projects", ensureIdDeveloperExists, showProjectsDev);
+app.delete("/projects/:id", ensureIdProjectsExists, deleteProject);
+app.delete("/projects/:id/technologies/:name", ensureIdProjectsExists, ensureProjectHasTech, deleteTech);
 
 const PORT: number = 3000; 
 const url: string = `http://localhost:${PORT}`;

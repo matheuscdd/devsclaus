@@ -3,7 +3,7 @@ import { QueryConfig, QueryResult } from "pg";
 import format from "pg-format";
 import { client } from "../database";
 import { internalServerError } from "../errors/common.errors";
-import { iDeveloperCreateResult, iDeveloperRequest, iDeveloperResult, iDeveloperUpdateRequest, iValidateDeveloper } from "../interfaces/developers.interfaces";
+import { iDeveloperCreateResult, iDeveloperProjectResult, iDeveloperRequest, iDeveloperResult, iDeveloperUpdateRequest, iValidateDeveloper } from "../interfaces/developers.interfaces";
 import { validateCreateDevData, validateUpdateDevData } from "../validates/developers.validates";
 
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
@@ -203,7 +203,7 @@ export async function showProjectsDev(req: Request, res: Response): Promise<Resp
     values: [idDev]
   }
 
-  const queryResult = await client.query(queryConfig); //Falta tipar esse cidaão talvez dê pra usar o omit
+  const queryResult: iDeveloperProjectResult = await client.query(queryConfig);
 
   return res.status(200).json(queryResult.rows);
 }

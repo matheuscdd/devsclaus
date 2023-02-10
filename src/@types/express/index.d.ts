@@ -9,6 +9,7 @@ declare global {
       idDev?: number;
       idProject?: number;
       idInfo:? number;
+      idTech?: number;
       infoDev?: iInfoRequest;
     }
   }
