@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import format from "pg-format";
-import { iInfoResult, iValidadeCreateInfo } from "../interfaces/infos.interfaces";
-import { validateCreateInfo } from "../validates/infos.validates";
+import { iInfoResult, iValidadeInfo } from "../interfaces/infos.interfaces";
+import { validateCreateInfo, validateUpdateInfo } from "../validates/infos.validates";
 import { client } from "../database";
 import { QueryConfig } from "pg";
+import { iInfoRequest } from "../interfaces/infos.interfaces";
 
 export async function createInfo(req: Request, res: Response): Promise<Response> {
-    const resultValidate: iValidadeCreateInfo = validateCreateInfo(req);
+    const resultValidate: iValidadeInfo = validateCreateInfo(req);
     if (!resultValidate.status) {
         if (resultValidate.keysMissing.length > 0) {
             return res.status(400).json({
@@ -19,6 +20,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
     }
 
     const infoData = req.infoDev!;
+    
     let queryString: string = format(`--sql
             INSERT INTO
                 developer_infos(%I)
@@ -55,7 +57,48 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
 
     } catch(error: any) {
         return res.status(500).json({
-            message: "Internal Server Error",
+            message: `Internal Server Error`,
+            type: error.message
+        });
+    }
+}
+
+export async function updateInfo(req: Request, res: Response): Promise<Response> {
+    const resultValidate: iValidadeInfo = validateUpdateInfo(req);
+
+    if (!resultValidate.status) {
+        if (!resultValidate.rightFormat[0]) {
+            return res.status(400).json({
+                message: `Some keys or values are out of format`
+            });
+        }
+        return res.status(400).json({
+            message: `Some keys are missing: ${resultValidate.keysMissing}`
+        });
+    }
+
+    const idInfo: number = req.idInfo!;
+    const infoData: iInfoRequest = req.infoDev!;
+
+    const queryString: string = format(`--sql
+        UPDATE
+            developer_infos
+        SET(%I) = ROW(%L)
+        WHERE
+            id = %s
+        RETURNING *; 
+    `,
+    Object.keys(infoData),
+    Object.values(infoData),
+    idInfo 
+    );
+
+    try {
+        const queryResult: iInfoResult = await client.query(queryString);
+        return res.status(200).json(queryResult.rows[0]);
+    } catch(error: any) {
+        return res.status(500).json({
+            message: `Internal Server Error`,
             type: error.message
         });
     }
@@ -63,10 +106,3 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
 
 
 
-// --Assim que faz para atualizar uma tecnologia
-// UPDATE 
-// 	developer_infos 
-// SET 
-// 	"preferredOS" = 'Linux'
-// WHERE 
-// 	id = 13;

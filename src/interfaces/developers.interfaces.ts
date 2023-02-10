@@ -26,7 +26,7 @@ export interface iValidateDeveloper {
 }
 
 export interface iDeveloperInfoId {
-    developerInfoId: string | null;
+    developerInfoId: number | null;
 }
 
 export type iDeveloperInfoIdResult = QueryResult<iDeveloperInfoId>;

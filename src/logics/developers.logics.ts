@@ -35,7 +35,7 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
     return res.status(201).json(queryResult.rows[0]);
   } catch (error: any) {
     return res.status(500).json({
-      message: "Internal Server Error",
+      message: `Internal Server Error`,
       type: error.message
     });
   }
@@ -141,7 +141,7 @@ export async function updateDeveloper(req: Request, res: Response): Promise<Resp
       message: `Some keys or values are out of format`
     });
   }
-  
+
   const idDev: number = req.idDev!;
   const dev: iDeveloperUpdateRequest = req.dev!;
 
@@ -160,11 +160,10 @@ export async function updateDeveloper(req: Request, res: Response): Promise<Resp
 
   try {
     const queryResult: iDeveloperResult = await client.query(queryString);
-    console.log(queryResult.rows)
     return res.status(200).json(queryResult.rows[0]) 
   } catch(error: any) {
     return res.status(500).json({
-      message: "Internal Server Error",
+      message: `Internal Server Error`,
       type: error.message
     });
   }

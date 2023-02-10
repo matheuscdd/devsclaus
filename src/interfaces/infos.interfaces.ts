@@ -1,14 +1,14 @@
 import { QueryResult } from "pg";
 
-export interface iValidadeCreateInfo {
+export interface iValidadeInfo {
     status: boolean;
     keysMissing: string[];
     rightFormat: boolean[];
 }
 
 export interface iInfoRequest {
-    developerSince: string;
-    preferredOS: "Windows" | "Linux" | "MacOS";
+    developerSince?: string;
+    preferredOS?: "Windows" | "Linux" | "MacOS";
 }
 
 export interface iInfo extends iInfoRequest {
