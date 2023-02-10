@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import format from "pg-format";
-import { iInfoResult, iValidadeInfo } from "../interfaces/infos.interfaces";
+import { iInfoResult } from "../interfaces/infos.interfaces";
+import { iValidade } from "../interfaces/common.interfaces";
 import { validateCreateInfo, validateUpdateInfo } from "../validates/infos.validates";
 import { client } from "../database";
 import { QueryConfig } from "pg";
@@ -8,7 +9,7 @@ import { iInfoRequest } from "../interfaces/infos.interfaces";
 import { internalServerError, keysMissing, outFormat } from "../errors/common.errors";
 
 export async function createInfo(req: Request, res: Response): Promise<Response> {
-    const resultValidate: iValidadeInfo = validateCreateInfo(req);
+    const resultValidate: iValidade = validateCreateInfo(req);
     if (!resultValidate.status) {
         if (resultValidate.keysMissing.length > 0) {
             return keysMissing(res, resultValidate.keysMissing);
@@ -58,7 +59,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
 }
 
 export async function updateInfo(req: Request, res: Response): Promise<Response> {
-    const resultValidate: iValidadeInfo = validateUpdateInfo(req);
+    const resultValidate: iValidade = validateUpdateInfo(req);
 
     if (!resultValidate.status) {
         if (!resultValidate.rightFormat[0]) {

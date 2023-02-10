@@ -1,6 +1,7 @@
 import * as express from "express";
 import { iDeveloperRequest } from "../../interfaces/developers.interfaces";
 import { iInfoRequest } from "../../interfaces/infos.interfaces";
+import { iProjectRequest } from "../../interfaces/projects.interfaces";
 
 declare global {
   namespace Express {
@@ -11,6 +12,7 @@ declare global {
       idInfo:? number;
       idTech?: number;
       infoDev?: iInfoRequest;
+      projectData?: iProjectRequest;
     }
   }
 }

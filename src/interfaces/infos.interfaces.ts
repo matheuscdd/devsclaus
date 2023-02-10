@@ -1,11 +1,5 @@
 import { QueryResult } from "pg";
 
-export interface iValidadeInfo {
-    status: boolean;
-    keysMissing: string[];
-    rightFormat: boolean[];
-}
-
 export interface iInfoRequest {
     developerSince?: string;
     preferredOS?: "Windows" | "Linux" | "MacOS";

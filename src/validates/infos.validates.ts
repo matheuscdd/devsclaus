@@ -1,20 +1,21 @@
-import { iInfoRequest, iValidadeInfo } from "../interfaces/infos.interfaces";
+import { iInfoRequest } from "../interfaces/infos.interfaces";
 import { verifyDateRequest } from "./common.validates";
 import { Request } from "express";
+import { iValidade } from "../interfaces/common.interfaces";
 
-export function validateCreateInfo(req: Request): iValidadeInfo {
+export function validateCreateInfo(req: Request): iValidade {
     const infoData: iInfoRequest = req.body;
     const infoDate: null | string = infoData.developerSince ? verifyDateRequest(infoData.developerSince) : null;
-    console.log(infoDate)
     const systemOSRequired: string[] = ["Windows", "Linux", "MacOS"];
     const requiredKeys: string[] = ["preferredOS", "developerSince"];
     const verifyTypes: boolean = 
         systemOSRequired.includes(infoData.preferredOS!) &&
         infoDate !== null;
     if (verifyTypes) {
-        req.infoDev = {}
-        req.infoDev.developerSince = infoDate!;
-        req.infoDev.preferredOS = infoData.preferredOS!;
+        req.infoDev = {
+            developerSince: infoDate!,
+            preferredOS: infoData.preferredOS!
+        }
         return {
             status: true,
             keysMissing: [],
@@ -29,7 +30,7 @@ export function validateCreateInfo(req: Request): iValidadeInfo {
     }
 }
 
-export function validateUpdateInfo(req: Request): iValidadeInfo {
+export function validateUpdateInfo(req: Request): iValidade {
     const infoData: iInfoRequest = req.body;
     const systemOSRequired: string[] = ["Windows", "Linux", "MacOS"];
     const infoDate: null | string = infoData.developerSince ? verifyDateRequest(infoData.developerSince) : null;

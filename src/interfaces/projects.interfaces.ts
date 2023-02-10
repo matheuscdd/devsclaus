@@ -5,7 +5,7 @@ export interface iProjectRequest {
     description: string;
     estimatedTime: string;
     repository: string;
-    startDate: Date; //Talvez precise trocar para string
+    startDate: string; 
     developerId: number;
 }
 
