@@ -1,0 +1,28 @@
+SELECT
+	developers."id" "developerId",
+	developers."name" "developerName",
+	developers."email" "developerEmail",
+	developer_infos."id" "developerInfoId",
+	developer_infos."developerSince" "developerInfoDeveloperSince",
+	developer_infos."preferredOS" "developerInfoPreferredOS",
+	projects."id" "projectId",
+	projects."name" "projectName",
+	projects."description" "projectDescription",
+	projects."estimatedTime" "projectEstimatedTime",
+	projects."repository" "projectRepository",
+	projects."startDate" "projectsStartDate",
+	projects."endDate" "projectsEndDate",
+	technologies."id" "technologyId",
+	technologies."name" "technologyName"
+FROM 
+    developers
+LEFT JOIN 
+    developer_infos ON developers. "developerInfoId" = developer_infos.id
+LEFT JOIN 
+	projects ON projects. "developerId" = developers.id
+LEFT JOIN
+	projects_technologies ON projects.id  = projects_technologies. "projectId"
+LEFT JOIN 
+	technologies ON projects_technologies. "technologyId" = technologies.id
+WHERE 
+	developers.id = 2;

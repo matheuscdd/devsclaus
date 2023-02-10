@@ -9,9 +9,24 @@ export interface iProjectRequest {
     developerId: number;
 }
 
-export interface iProject extends iProjectRequest {
+export interface iProjectCreate extends iProjectRequest {
     endDate: Date | null;
     id: number;
 }
 
-export type iProjectResult = QueryResult<iProject>;
+export type iProjectResult = QueryResult<iProjectCreate>;
+
+export interface iProjectWithTech {
+    projectID: number;
+    projectName: string;
+    projectDescription: string;
+    projectEstimatedTime: string;
+    projectRepository: URL;
+    projectStartDate: Date;
+    projectEndDate: null | Date;
+    projectDeveloperID: number;
+    technologyID: null | number;
+    technologyName: null | string;
+}
+
+export type iProjectWithTechResult = QueryResult<iProjectWithTech>;

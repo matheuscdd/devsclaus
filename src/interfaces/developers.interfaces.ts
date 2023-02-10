@@ -12,10 +12,21 @@ export interface iDeveloperUpdateRequest {
     developerInfoId?: null;
 }
 
-export interface iDeveloper extends iDeveloperRequest {
+export interface iDeveloper {
+    developerId: number;
+	developerName: string;
+	developerEmail: string;
+	developerInfoId: null | number;
+	developerInfoDeveloperSince: null | Date;
+	developerInfoPreferredOS: null | string;
+}
+
+export interface iDeveloperCreate extends iDeveloperRequest {
     id: number;
     developerInfoId: null;
 }
+
+export type iDeveloperCreateResult = QueryResult<iDeveloper>;
 
 export type iDeveloperResult = QueryResult<iDeveloper>;
 

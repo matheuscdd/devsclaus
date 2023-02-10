@@ -5,18 +5,15 @@ import { validateCreateInfo, validateUpdateInfo } from "../validates/infos.valid
 import { client } from "../database";
 import { QueryConfig } from "pg";
 import { iInfoRequest } from "../interfaces/infos.interfaces";
+import { internalServerError, keysMissing, outFormat } from "../errors/common.errors";
 
 export async function createInfo(req: Request, res: Response): Promise<Response> {
     const resultValidate: iValidadeInfo = validateCreateInfo(req);
     if (!resultValidate.status) {
         if (resultValidate.keysMissing.length > 0) {
-            return res.status(400).json({
-                message: `Some keys are missing: ${resultValidate.keysMissing}`
-            });
+            return keysMissing(res, resultValidate.keysMissing);
         }
-        return res.status(400).json({
-            message: `Some keys or values are out of format`
-        });
+        return outFormat(res);
     }
 
     const infoData = req.infoDev!;
@@ -56,10 +53,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
         return res.status(201).json(queryResult.rows[0]);
 
     } catch(error: any) {
-        return res.status(500).json({
-            message: `Internal Server Error`,
-            type: error.message
-        });
+        return internalServerError(res, error.message);
     }
 }
 
@@ -68,13 +62,9 @@ export async function updateInfo(req: Request, res: Response): Promise<Response>
 
     if (!resultValidate.status) {
         if (!resultValidate.rightFormat[0]) {
-            return res.status(400).json({
-                message: `Some keys or values are out of format`
-            });
+            return outFormat(res);
         }
-        return res.status(400).json({
-            message: `Some keys are missing: ${resultValidate.keysMissing}`
-        });
+        return keysMissing(res, resultValidate.keysMissing);
     }
 
     const idInfo: number = req.idInfo!;
@@ -97,10 +87,7 @@ export async function updateInfo(req: Request, res: Response): Promise<Response>
         const queryResult: iInfoResult = await client.query(queryString);
         return res.status(200).json(queryResult.rows[0]);
     } catch(error: any) {
-        return res.status(500).json({
-            message: `Internal Server Error`,
-            type: error.message
-        });
+        return internalServerError(res, error.message);
     }
 }
 

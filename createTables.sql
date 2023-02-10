@@ -6,16 +6,6 @@ CREATE TABLE IF NOT EXISTS developer_infos(
 	"preferredOS" "OS" NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS projects(
-	"id" SERIAL PRIMARY KEY,
-	"name" VARCHAR(50) NOT NULL,
-	"description" TEXT NOT NULL,
-	"estimatedTime" VARCHAR(20) NOT NULL,
-	"repository" VARCHAR(120) NOT NULL,
-	"startDate" DATE NOT NULL,
-	"endDate" DATE
-);
-
 CREATE TYPE tech AS ENUM ('JavaScript', 'Python', 'React', 'Express.js', 'HTML', 'CSS', 'Django', 'PostgreSQL', 'MongoDB');
 
 CREATE TABLE IF NOT EXISTS technologies(
@@ -28,13 +18,19 @@ VALUES ('JavaScript'), ('Python'), ('React'), ('Express.js'), ('HTML'), ('CSS'),
 
 CREATE TABLE IF NOT EXISTS projects_technologies(
 	"id" SERIAL PRIMARY KEY,
-	"addedIn" DATE NOT NULL
+	"addedIn" DATE NOT NULL, 
+	"projectId" INT NOT NULL,
+	"technologyId" INT NOT NULL,
+	CONSTRAINT "fkProjectId" FOREIGN KEY("projectId") REFERENCES projects(id) ON DELETE CASCADE,
+	CONSTRAINT "fkTechnologyId" FOREIGN KEY("technologyId") REFERENCES technologies(id)
 );
 
 CREATE TABLE IF NOT EXISTS developers(
 	"id" SERIAL PRIMARY KEY,
 	"name" VARCHAR(50) NOT NULL,
-	"email" VARCHAR(50) UNIQUE NOT NULL
+	"email" VARCHAR(50) UNIQUE NOT NULL,
+	"developerInfoId" INTEGER UNIQUE,
+	FOREIGN KEY ("developerInfoId") REFERENCES developer_infos("id")
 );
 
 CREATE TABLE IF NOT EXISTS projects(
@@ -46,5 +42,5 @@ CREATE TABLE IF NOT EXISTS projects(
 	"startDate" DATE NOT NULL,
 	"endDate" DATE,
 	"developerId" INT NOT NULL,
-	CONSTRAINT "fkDeveloperId" FOREIGN KEY("developerId") REFERENCES developers(id)
+	CONSTRAINT "fkDeveloperId" FOREIGN KEY("developerId") REFERENCES developers(id) ON DELETE CASCADE
 );

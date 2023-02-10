@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import format from "pg-format";
 import { client } from "../database";
-import { iDeveloperRequest, iDeveloperResult, iDeveloperUpdateRequest, iValidateDeveloper } from "../interfaces/developers.interfaces";
+import { internalServerError } from "../errors/common.errors";
+import { iDeveloperCreateResult, iDeveloperRequest, iDeveloperResult, iDeveloperUpdateRequest, iValidateDeveloper } from "../interfaces/developers.interfaces";
 import { validateCreateDevData, validateUpdateDevData } from "../validates/developers.validates";
 
 export async function createDeveloper(req: Request, res: Response): Promise<Response> {
@@ -14,7 +15,7 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
       });
     }
     return res.status(400).json({
-      message: `Some keys or values are out of format`
+      message: `Some values are out of format`
     });
   }
 
@@ -31,13 +32,10 @@ export async function createDeveloper(req: Request, res: Response): Promise<Resp
   );
 
   try {
-    const queryResult: iDeveloperResult = await client.query(queryString);
+    const queryResult: iDeveloperCreateResult = await client.query(queryString);
     return res.status(201).json(queryResult.rows[0]);
   } catch (error: any) {
-    return res.status(500).json({
-      message: `Internal Server Error`,
-      type: error.message
-    });
+    return internalServerError(res, error.message);
   }
 }
 
@@ -138,7 +136,7 @@ export async function updateDeveloper(req: Request, res: Response): Promise<Resp
       });
     }
     return res.status(400).json({
-      message: `Some keys or values are out of format`
+      message: `Some values are out of format`
     });
   }
 
@@ -162,9 +160,50 @@ export async function updateDeveloper(req: Request, res: Response): Promise<Resp
     const queryResult: iDeveloperResult = await client.query(queryString);
     return res.status(200).json(queryResult.rows[0]) 
   } catch(error: any) {
-    return res.status(500).json({
-      message: `Internal Server Error`,
-      type: error.message
-    });
+    return internalServerError(res, error.message);
   }
+}
+
+export async function showProjectsDev(req: Request, res: Response): Promise<Response> {
+  const idDev: number = req.idDev!;
+
+  const queryString: string = `--sql
+    SELECT
+      developers."id" "developerId",
+      developers."name" "developerName",
+      developers."email" "developerEmail",
+      developer_infos."id" "developerInfoId",
+      developer_infos."developerSince" "developerInfoDeveloperSince",
+      developer_infos."preferredOS" "developerInfoPreferredOS",
+      projects."id" "projectId",
+      projects."name" "projectName",
+      projects."description" "projectDescription",
+      projects."estimatedTime" "projectEstimatedTime",
+      projects."repository" "projectRepository",
+      projects."startDate" "projectsStartDate",
+      projects."endDate" "projectsEndDate",
+      technologies."id" "technologyId",
+      technologies."name" "technologyName"
+    FROM 
+        developers
+    LEFT JOIN 
+        developer_infos ON developers. "developerInfoId" = developer_infos.id
+    LEFT JOIN 
+      projects ON projects. "developerId" = developers.id
+    LEFT JOIN
+      projects_technologies ON projects.id  = projects_technologies. "projectId"
+    LEFT JOIN 
+      technologies ON projects_technologies. "technologyId" = technologies.id
+    WHERE 
+      developers.id = $1;
+  `;
+
+  const queryConfig: QueryConfig = {
+    text: queryString,
+    values: [idDev]
+  }
+
+  const queryResult = await client.query(queryConfig); //Falta tipar esse cidaão talvez dê pra usar o omit
+
+  return res.status(200).json(queryResult.rows);
 }

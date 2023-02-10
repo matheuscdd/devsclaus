@@ -26,10 +26,11 @@ export async function ensureIdProjectsExists(req: Request, res: Response, next: 
     }
 
     const queryResult: iProjectResult = await client.query(queryConfig);
-
-    if(queryResult.rowCount === 0){
+    
+    if (queryResult.rowCount === 0){
         return notFoundProjectId(res);
     }
+    req.idProject = queryResult.rows[0].id;
 
     return next();
 }
