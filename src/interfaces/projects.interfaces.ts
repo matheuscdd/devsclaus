@@ -1,12 +1,12 @@
 import { QueryResult } from "pg";
 
 export interface iProjectRequest {
-    name: string;
-    description: string;
-    estimatedTime: string;
-    repository: string;
-    startDate: string; 
-    developerId: number;
+    name?: string;
+    description?: string;
+    estimatedTime?: string;
+    repository?: string;
+    startDate?: string; 
+    developerId?: number;
 }
 
 export interface iProjectCreate extends iProjectRequest {

@@ -15,15 +15,15 @@ export function validateCreateProject(req: Request): iValidade {
         typeof projectData.repository === "string" &&
         typeof projectData.developerId === "number" &&
         projectDate !== null;
-    console.log(verifyTypes) 
+    
     if (verifyTypes) {
         req.projectData = {
             startDate: projectDate!,
-            name: projectData.name,
-            description: projectData.description,
-            estimatedTime: projectData.estimatedTime,
-            repository: projectData.repository,
-            developerId: projectData.developerId
+            name: projectData.name!,
+            description: projectData.description!,
+            estimatedTime: projectData.estimatedTime!,
+            repository: projectData.repository!,
+            developerId: projectData.developerId!
         }
         return {
             status: true,
@@ -38,7 +38,40 @@ export function validateCreateProject(req: Request): iValidade {
         keysMissing,
         rightFormat: [verifyTypes]
     }
+}
 
+export function validateUpdateProject(req: Request): iValidade {
+    const requiredKeys: string [] = ["name", "description", "estimatedTime", "repository", "startDate", "developerId"];
+    const projectData: iProjectRequest = req.body;
+    const projectDate: null | string | boolean = projectData.startDate ? verifyDateRequest(projectData.startDate) : true;
+   
+    const verifyTypes: boolean = 
+        (projectData.name ? typeof projectData.name === "string" : true) &&
+        (projectData.description ? typeof projectData.description === "string" : true) &&
+        (projectData.estimatedTime ?  typeof projectData.estimatedTime === "string" : true) &&
+        (projectData.repository ? typeof projectData.repository === "string" : true) &&
+        projectDate !== null;
+    
+    if (verifyTypes) {
+        req.projectData = {};
+        projectDate !== true ? req.projectData.startDate = projectDate! : null;
+        projectData.name ? req.projectData.name = projectData.name : null;
+        projectData.description ? req.projectData.description = projectData.description : null;
+        projectData.estimatedTime ? req.projectData.estimatedTime = projectData.estimatedTime : null;
+        projectData.repository ? req.projectData.repository = projectData.repository : null;
+        return {
+            status: true,
+            keysMissing: [],
+            rightFormat: [true]
+        }
+    }     
+
+    const keysMissing: string[] = requiredKeys.filter((key) => !Object.keys(projectData).includes(key));
+    return {
+        status: false,
+        keysMissing,
+        rightFormat: [verifyTypes]
+    }
 }
 
 export function validateCreateTech(req: Request): iValidateCreateTech {
@@ -52,5 +85,4 @@ export function validateCreateTech(req: Request): iValidateCreateTech {
         status,
         requiredTechs: requiredTypesTechs
     }
-    ;
 }
