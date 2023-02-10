@@ -13,6 +13,7 @@ declare global {
       idTech?: number;
       infoDev?: iInfoRequest;
       projectData?: iProjectRequest;
+      techName?: string;
     }
   }
 }

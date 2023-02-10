@@ -40,9 +40,18 @@ interface iProjectTechnologies {
 
 export type iProjectTechnologiesResult = QueryResult<iProjectTechnologies>;
 
+export interface iTechRequest {
+    name: string;
+}
+
 interface iTech {
     id: number;
     name: string;
 }
 
 export type iTechResult = QueryResult<iTech>;
+
+export interface iValidateCreateTech {
+    status: boolean;
+    requiredTechs: string[];
+}

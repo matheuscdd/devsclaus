@@ -4,8 +4,8 @@ import format from "pg-format";
 import { client } from "../database";
 import { internalServerError, keysMissing, outFormat } from "../errors/common.errors";
 import { iValidade } from "../interfaces/common.interfaces";
-import { iProjectCreate, iProjectRequest, iProjectResult, iProjectWithTechResult } from "../interfaces/projects.interfaces";
-import { validateCreateProject } from "../validates/projects.validates";
+import { iProjectCreate, iProjectRequest, iProjectResult, iProjectTechnologiesResult, iProjectWithTechResult, iTechResult, iValidateCreateTech } from "../interfaces/projects.interfaces";
+import { validateCreateProject, validateCreateTech } from "../validates/projects.validates";
 
 export async function showProjects(req: Request, res: Response): Promise<Response> {
     const queryString: string = `--sql
@@ -143,3 +143,77 @@ export async function createProject(req: Request, res: Response): Promise<Respon
     }   
 }
 
+export async function createTech(req: Request, res: Response): Promise<Response> {
+    const resultValidate: iValidateCreateTech = validateCreateTech(req);
+    if (!resultValidate.status) {
+        return res.status(400).json({
+            message: `Technology not supported`,
+            options: resultValidate.requiredTechs
+        });
+    } 
+
+    const idProject: number = req.idProject!;
+    const techName: string = req.techName!;
+
+    let queryString: string = `--sql
+        SELECT
+            *
+        FROM
+            technologies  
+        WHERE   
+            name = $1;
+    `;
+
+    let queryConfig: QueryConfig = {
+        text: queryString,
+        values: [techName]
+    }
+
+    const queryResult: iTechResult = await client.query(queryConfig);
+    const idTech: number = queryResult.rows[0].id;
+
+    queryString = `--sql
+        INSERT INTO
+            projects_technologies("projectId", "technologyId", "addedIn")
+        VALUES
+            ($1, $2, $3)
+        RETURNING *;      
+    `;
+
+    queryConfig = {
+        text: queryString,
+        values: [idProject, idTech, new Date().toLocaleDateString("pt-br")]
+    }
+
+    await client.query(queryConfig);
+
+    queryString = `--sql
+        SELECT 
+            pj."id" "projectId",
+            pj."name" "projectName",
+            pj."description" "projectDescription",
+            pj."estimatedTime" "projectEstimatedTime",
+            pj."repository" "projectRepository",
+            pj."startDate" "projectsStartDate",
+            pj."endDate" "projectsEndDate",
+            pj."developerId" "projectDeveloperId",
+            ti."id" "technologyId",
+            ti."name" "technologyName"
+        FROM 
+            projects_technologies pt 
+        JOIN
+            projects pj ON pt."projectId" = pj.id
+        JOIN 
+            technologies ti ON pt."technologyId" = ti.id
+        WHERE pj.id = $1;
+    `;
+
+    queryConfig = {
+        text: queryString,
+        values: [idProject]
+    }
+
+    const queryResponse: iProjectWithTechResult = await client.query(queryConfig);
+
+    return res.status(201).json(queryResponse.rows[0]);
+}

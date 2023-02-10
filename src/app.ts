@@ -6,7 +6,7 @@ import { ensureIdDeveloperExists as ensureIdDeveloperExistsProj } from "./middle
 import { createInfo, updateInfo } from "./logics/infos.logics";
 import { isBodyEmpty } from "./middlewares/common.middlewares";
 import { ensureDevHasInfo, ensureDevNoInfo } from "./middlewares/infos.middlewares";
-import { createProject, deleteProject, deleteTech, findProject, showProjects } from "./logics/projects.logics";
+import { createProject, createTech, deleteProject, deleteTech, findProject, showProjects } from "./logics/projects.logics";
 import { ensureIdProjectsExists, ensureProjectHasTech } from "./middlewares/projects.middlewares";
 import "dotenv/config";
 
@@ -28,7 +28,7 @@ app.get("/projects/:id", ensureIdProjectsExists, findProject);
 app.delete("/projects/:id", ensureIdProjectsExists, deleteProject);
 app.delete("/projects/:id/technologies/:name", ensureIdProjectsExists, ensureProjectHasTech, deleteTech);
 app.post("/projects", isBodyEmpty, ensureIdDeveloperExistsProj, createProject);
-
+app.post("/projects/:id/technologies", isBodyEmpty, ensureIdProjectsExists, createTech);
 
 const PORT: number = 3000; 
 const url: string = `http://localhost:${PORT}`;
