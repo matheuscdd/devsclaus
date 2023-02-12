@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS projects_technologies(
 	"addedIn" DATE NOT NULL, 
 	"projectId" INT NOT NULL,
 	"technologyId" INT NOT NULL,
-	CONSTRAINT "fkProjectId" FOREIGN KEY("projectId") REFERENCES projects(id) ON DELETE CASCADE,
-	CONSTRAINT "fkTechnologyId" FOREIGN KEY("technologyId") REFERENCES technologies(id)
+	FOREIGN KEY("projectId") REFERENCES projects(id) ON DELETE CASCADE,
+	FOREIGN KEY("technologyId") REFERENCES technologies(id)
 );
 
 CREATE TABLE IF NOT EXISTS developers(
@@ -42,5 +42,5 @@ CREATE TABLE IF NOT EXISTS projects(
 	"startDate" DATE NOT NULL,
 	"endDate" DATE,
 	"developerId" INT NOT NULL,
-	CONSTRAINT "fkDeveloperId" FOREIGN KEY("developerId") REFERENCES developers(id) ON DELETE CASCADE
+	FOREIGN KEY("developerId") REFERENCES developers(id) ON DELETE CASCADE
 );
