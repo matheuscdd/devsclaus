@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS developers(
 	"name" VARCHAR(50) NOT NULL,
 	"email" VARCHAR(50) UNIQUE NOT NULL,
 	"developerInfoId" INTEGER UNIQUE,
-	FOREIGN KEY ("developerInfoId") REFERENCES developer_infos("id")
+	FOREIGN KEY ("developerInfoId") REFERENCES developer_infos("id") ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS projects(
