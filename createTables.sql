@@ -16,14 +16,6 @@ CREATE TABLE IF NOT EXISTS technologies(
 INSERT INTO technologies(name)
 VALUES ('JavaScript'), ('Python'), ('React'), ('Express.js'), ('HTML'), ('CSS'), ('Django'), ('PostgreSQL'), ('MongoDB');
 
-CREATE TABLE IF NOT EXISTS projects_technologies(
-	"id" SERIAL PRIMARY KEY,
-	"addedIn" DATE NOT NULL, 
-	"projectId" INT NOT NULL,
-	"technologyId" INT NOT NULL,
-	FOREIGN KEY("projectId") REFERENCES projects(id) ON DELETE CASCADE,
-	FOREIGN KEY("technologyId") REFERENCES technologies(id)
-);
 
 CREATE TABLE IF NOT EXISTS developers(
 	"id" SERIAL PRIMARY KEY,
@@ -43,4 +35,13 @@ CREATE TABLE IF NOT EXISTS projects(
 	"endDate" DATE,
 	"developerId" INT NOT NULL,
 	FOREIGN KEY("developerId") REFERENCES developers(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS projects_technologies(
+	"id" SERIAL PRIMARY KEY,
+	"addedIn" DATE NOT NULL, 
+	"projectId" INT NOT NULL,
+	"technologyId" INT NOT NULL,
+	FOREIGN KEY("projectId") REFERENCES projects(id) ON DELETE CASCADE,
+	FOREIGN KEY("technologyId") REFERENCES technologies(id)
 );
