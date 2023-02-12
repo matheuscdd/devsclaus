@@ -10,7 +10,7 @@ CREATE TYPE tech AS ENUM ('JavaScript', 'Python', 'React', 'Express.js', 'HTML',
 
 CREATE TABLE IF NOT EXISTS technologies(
 	"id" SERIAL PRIMARY KEY,
-	"name" tech NOT NULL
+	"name" "tech" NOT NULL
 );
 
 INSERT INTO technologies(name)
