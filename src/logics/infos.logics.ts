@@ -14,7 +14,7 @@ export async function createInfo(req: Request, res: Response): Promise<Response>
         if (resultValidate.keysMissing.length > 0) {
             return keysMissing(res, resultValidate.keysMissing);
         }
-        return outFormat(res);
+        return outFormat(res, ["Windows", "Linux", "MacOS"]);
     }
 
     const infoData = req.infoDev!;
@@ -63,7 +63,7 @@ export async function updateInfo(req: Request, res: Response): Promise<Response>
 
     if (!resultValidate.status) {
         if (!resultValidate.rightFormat[0]) {
-            return outFormat(res);
+            return outFormat(res, ["Windows", "Linux", "MacOS"]);
         }
         return keysMissing(res, resultValidate.keysMissing);
     }

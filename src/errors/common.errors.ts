@@ -6,9 +6,9 @@ export function keysMissing(res: Response, keys: string[]): Response {
     });
 }
 
-export function outFormat(res: Response): Response {
+export function outFormat(res: Response, arr: string[] = []): Response {
     return res.status(400).json({
-        message: `Some values are out of format`
+        message: `Some values are out of format. ${arr}`
     });
 }
 
